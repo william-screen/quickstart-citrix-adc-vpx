@@ -1,0 +1,31 @@
+[
+    { "ParameterKey": "VPCCIDR", "ParameterValue": "10.0.0.0/16" },
+    { "ParameterKey": "VPCTenancy", "ParameterValue": "default" },
+
+    { "ParameterKey": "PrimaryAvailabilityZone", "ParameterValue": "eu-central-1a" },
+    { "ParameterKey": "SecondaryAvailabilityZone", "ParameterValue": "eu-central-1b" },
+
+    { "ParameterKey": "RestrictedWebAppCIDR", "ParameterValue": "0.0.0.0/0" },
+    { "ParameterKey": "RestrictedSSHCIDR", "ParameterValue": "0.0.0.0/0" },
+    
+    { "ParameterKey": "PrimaryManagementPrivateSubnetCIDR", "ParameterValue": "10.0.1.0/24" },
+    { "ParameterKey": "PrimaryClientPublicSubnetCIDR", "ParameterValue": "10.0.2.0/24" },
+    { "ParameterKey": "PrimaryServerPrivateSubnetCIDR", "ParameterValue": "10.0.3.0/24" },
+    { "ParameterKey": "PrimaryManagementPrivateIP", "ParameterValue": "" },
+    { "ParameterKey": "PrimaryClientPrivateIP", "ParameterValue": "" },
+    { "ParameterKey": "PrimaryServerPrivateIP", "ParameterValue": "" },
+
+    { "ParameterKey": "SecondaryManagementPrivateSubnetCIDR", "ParameterValue": "10.0.4.0/24" },
+    { "ParameterKey": "SecondaryClientPublicSubnetCIDR", "ParameterValue": "10.0.5.0/24" },
+    { "ParameterKey": "SecondaryServerPrivateSubnetCIDR", "ParameterValue": "10.0.6.0/24" },
+    { "ParameterKey": "SecondaryManagementPrivateIP", "ParameterValue": "" },
+    { "ParameterKey": "SecondaryClientPrivateIP", "ParameterValue": "" },
+    { "ParameterKey": "SecondaryServerPrivateIP", "ParameterValue": "" },
+
+    { "ParameterKey": "CitrixADCImageID", "ParameterValue": "" },
+    { "ParameterKey": "KeyPairName", "ParameterValue": "public_key_demo" },
+    { "ParameterKey": "CitrixADCInstanceType", "ParameterValue": "m4.xlarge" },
+
+    { "ParameterKey": "QSS3BucketName", "ParameterValue": "demo-isha" },
+    { "ParameterKey": "QSS3KeyPrefix", "ParameterValue": "quickstart-citrix-adc-ha-across-az/" }
+]
