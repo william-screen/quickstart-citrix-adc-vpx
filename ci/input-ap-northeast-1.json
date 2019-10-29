@@ -2,7 +2,7 @@
     { "ParameterKey": "VPCCIDR", "ParameterValue": "10.0.0.0/16" },
     { "ParameterKey": "VPCTenancy", "ParameterValue": "default" },
 
-    { "ParameterKey": "PrimaryAvailabilityZone", "ParameterValue": "ap-northeast-1a" },
+    { "ParameterKey": "PrimaryAvailabilityZone", "ParameterValue": "ap-northeast-1b" },
     { "ParameterKey": "SecondaryAvailabilityZone", "ParameterValue": "ap-northeast-1c" },
 
     { "ParameterKey": "RestrictedWebAppCIDR", "ParameterValue": "10.0.0.0/16" },
