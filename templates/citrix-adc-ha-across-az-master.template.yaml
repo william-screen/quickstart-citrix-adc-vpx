@@ -98,7 +98,7 @@ Metadata:
       RestrictedWebAppCIDR:
         default: Remote web traffic CIDR
       RestrictedSSHCIDR:
-        default: Remote ssh traffic CIDR
+        default: Remote SSH traffic CIDR
       KeyPairName:
         default: Key pair name
       CitrixADCInstanceType:
@@ -417,9 +417,9 @@ Outputs:
     Description: Secondary Client private VIP
     Value: !GetAtt WorkLoadStack.Outputs.SecondaryClientPrivateVIP
   LinuxBastionHostEIP1:
-    Description: Elastic IP 1 for bastion
+    Description: Elastic IP address for bastion host 1
     Value: !GetAtt BastionStack.Outputs.EIP1
   LinuxBastionHostEIP2:
     Condition: 2BastionCondition
-    Description: Elastic IP 2 for bastion
+    Description: Elastic IP address for bastion host 2
     Value: !GetAtt BastionStack.Outputs.EIP2
