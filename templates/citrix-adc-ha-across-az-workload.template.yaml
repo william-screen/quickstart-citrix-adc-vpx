@@ -15,7 +15,7 @@ Metadata:
           default: Network configuration
         Parameters:
           - VPCID
-          - VPCCIDR
+          - BastionSecurityGroupID
           - RestrictedWebAppCIDR
           - PrimaryManagementPrivateSubnetID
           - PrimaryClientPublicSubnetID
@@ -50,8 +50,6 @@ Metadata:
 
       VPCID:
         default: VPC ID
-      VPCCIDR:
-        default: VPC CIDR
       PrimaryManagementPrivateSubnetID:
         default: Primary Management private subnet ID
       PrimaryClientPublicSubnetID:
@@ -81,6 +79,8 @@ Metadata:
         default: Secondary Client private IP
       SecondaryServerPrivateIP:
         default: Secondary Server private IP
+      BastionSecurityGroupID:
+        default: Bastion security group ID
 
       VPCTenancy:
         default: VPC tenancy attribute
@@ -104,14 +104,6 @@ Parameters:
   VPCID:
     Type: AWS::EC2::VPC::Id
     Description: The ID of your existing VPC (e.g., vpc-0343606e).
-  VPCCIDR:
-    Description: The CIDR block of your existing VPC.
-    Type: String
-    Default: 10.0.0.0/16
-    MinLength: 9
-    MaxLength: 18
-    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
-    ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x.
   VPCTenancy:
     Description: The allowed tenancy of instances launched into the VPC.
     Type: String
@@ -190,6 +182,13 @@ Parameters:
     Type: String
     Description: >-
       [Optional] Leave empty for automatic assignment. Private IP assigned to the Secondary Server ENI (last octet has to be between 5 and 254).
+  BastionSecurityGroupID:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: >-
+      Bastion security group id.
+      This security group will be granted access to the security groups that will be
+      created for the Citrix ADC HA pair interfaces.
+      This will effectively allow the bastion hosts to open connections to all ADC interfaces ( management, client and server).
   QSS3BucketName:
     AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
     ConstraintDescription: >-
@@ -249,8 +248,8 @@ Resources:
         https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/security-group.template.yaml
       Parameters:
         VPCID: !Ref VPCID
-        VPCCIDR: !Ref VPCCIDR
         RestrictedWebAppCIDR: !Ref RestrictedWebAppCIDR
+        BastionSecurityGroupID: !Ref BastionSecurityGroupID
 
   IAMRoleStack:
     Type: AWS::CloudFormation::Stack
@@ -265,9 +264,9 @@ Resources:
         https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/citrix-adc.template.yaml
       Parameters:
         CitrixADCImageID: !Ref CitrixADCImageID
-        ManagementSecurityGroup: !GetAtt SecurityGroupStack.Outputs.SecurityGroupID
-        ClientSecurityGroup: !GetAtt SecurityGroupStack.Outputs.SecurityGroupID
-        ServerSecurityGroup: !GetAtt SecurityGroupStack.Outputs.SecurityGroupID
+        ManagementSecurityGroup: !GetAtt SecurityGroupStack.Outputs.ManagementSecurityGroupID
+        ClientSecurityGroup: !GetAtt SecurityGroupStack.Outputs.ClientSecurityGroupID
+        ServerSecurityGroup: !GetAtt SecurityGroupStack.Outputs.ServerSecurityGroupID
         ManagementPrivateSubnetID: !Ref PrimaryManagementPrivateSubnetID
         ClientPublicSubnetID: !Ref PrimaryClientPublicSubnetID
         ServerPrivateSubnetID: !Ref PrimaryServerPrivateSubnetID
@@ -288,9 +287,9 @@ Resources:
         https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/citrix-adc.template.yaml
       Parameters:
         CitrixADCImageID: !Ref CitrixADCImageID
-        ManagementSecurityGroup: !GetAtt SecurityGroupStack.Outputs.SecurityGroupID
-        ClientSecurityGroup: !GetAtt SecurityGroupStack.Outputs.SecurityGroupID
-        ServerSecurityGroup: !GetAtt SecurityGroupStack.Outputs.SecurityGroupID
+        ManagementSecurityGroup: !GetAtt SecurityGroupStack.Outputs.ManagementSecurityGroupID
+        ClientSecurityGroup: !GetAtt SecurityGroupStack.Outputs.ClientSecurityGroupID
+        ServerSecurityGroup: !GetAtt SecurityGroupStack.Outputs.ServerSecurityGroupID
         ManagementPrivateSubnetID: !Ref SecondaryManagementPrivateSubnetID
         ClientPublicSubnetID: !Ref SecondaryClientPublicSubnetID
         ServerPrivateSubnetID: !Ref SecondaryServerPrivateSubnetID
@@ -319,14 +318,20 @@ Resources:
         SecondaryClientPrivateIP: !GetAtt SecondaryADCInstance.Outputs.ClientPrivateVIP
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        ManagementSecurityGroupID: !GetAtt SecurityGroupStack.Outputs.SecurityGroupID
+        ManagementSecurityGroupID: !GetAtt SecurityGroupStack.Outputs.ManagementSecurityGroupID
         PrimarySubnetID: !Ref PrimaryManagementPrivateSubnetID
         SecondarySubnetID: !Ref SecondaryManagementPrivateSubnetID
 
 Outputs:
-  SecurityGroupID:
-    Description: Security group ID for ADC ENIs
-    Value: !GetAtt SecurityGroupStack.Outputs.SecurityGroupID
+  ManagementSecurityGroupID:
+    Description: Security group ID for management ADC ENIs
+    Value: !GetAtt SecurityGroupStack.Outputs.ManagementSecurityGroupID
+  ClientSecurityGroupID:
+    Description: Security group ID for client ADC ENIs
+    Value: !GetAtt SecurityGroupStack.Outputs.ClientSecurityGroupID
+  ServerSecurityGroupID:
+    Description: Security group ID for server ADC ENIs
+    Value: !GetAtt SecurityGroupStack.Outputs.ServerSecurityGroupID
   InstanceProfileName:
     Description: Instance profile for ADCs
     Value: !GetAtt IAMRoleStack.Outputs.CitrixNodesProfile

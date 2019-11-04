@@ -345,7 +345,6 @@ Resources:
       Parameters:
         VPCID: !GetAtt VPCStack.Outputs.VPCID
         VPCTenancy: !Ref VPCTenancy
-        VPCCIDR: !Ref VPCCIDR
         RestrictedWebAppCIDR: !Ref RestrictedWebAppCIDR
         PrimaryManagementPrivateSubnetID: !GetAtt VPCStack.Outputs.PrivateSubnet1BID
         PrimaryClientPublicSubnetID: !GetAtt VPCStack.Outputs.PublicSubnet1ID
@@ -359,6 +358,7 @@ Resources:
         SecondaryManagementPrivateIP: !Ref SecondaryManagementPrivateIP
         SecondaryClientPrivateIP: !Ref SecondaryClientPrivateIP
         SecondaryServerPrivateIP: !Ref SecondaryServerPrivateIP
+        BastionSecurityGroupID: !GetAtt BastionStack.Outputs.BastionSecurityGroupID
         CitrixADCImageID: !Ref CitrixADCImageID
         KeyPairName: !Ref KeyPairName
         CitrixADCInstanceType: !Ref CitrixADCInstanceType
@@ -389,9 +389,15 @@ Outputs:
   SecondaryServerPrivateSubnetID:
     Description: Secondary Server private subnet ID
     Value: !GetAtt VPCStack.Outputs.PrivateSubnet2AID
-  SecurityGroupID:
-    Description: Security group ID for ADC ENIs
-    Value: !GetAtt WorkLoadStack.Outputs.SecurityGroupID
+  ManagementSecurityGroupID:
+    Description: Security group ID for management ADC ENIs
+    Value: !GetAtt WorkLoadStack.Outputs.ManagementSecurityGroupID
+  ClientSecurityGroupID:
+    Description: Security group ID for client ADC ENIs
+    Value: !GetAtt WorkLoadStack.Outputs.ClientSecurityGroupID
+  ServerSecurityGroupID:
+    Description: Security group ID for server ADC ENIs
+    Value: !GetAtt WorkLoadStack.Outputs.ServerSecurityGroupID
   InstanceProfileName:
     Description: Instance profile for ADCs
     Value: !GetAtt WorkLoadStack.Outputs.InstanceProfileName
