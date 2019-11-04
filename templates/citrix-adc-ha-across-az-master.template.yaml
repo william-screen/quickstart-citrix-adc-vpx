@@ -390,13 +390,13 @@ Outputs:
     Description: Secondary Server private subnet ID
     Value: !GetAtt VPCStack.Outputs.PrivateSubnet2AID
   ManagementSecurityGroupID:
-    Description: Security group ID for ADC ENIs
+    Description: Security group ID for management ADC ENIs
     Value: !GetAtt WorkLoadStack.Outputs.ManagementSecurityGroupID
   ClientSecurityGroupID:
-    Description: Security group ID for ADC ENIs
+    Description: Security group ID for client ADC ENIs
     Value: !GetAtt WorkLoadStack.Outputs.ClientSecurityGroupID
   ServerSecurityGroupID:
-    Description: Security group ID for ADC ENIs
+    Description: Security group ID for server ADC ENIs
     Value: !GetAtt WorkLoadStack.Outputs.ServerSecurityGroupID
   InstanceProfileName:
     Description: Instance profile for ADCs

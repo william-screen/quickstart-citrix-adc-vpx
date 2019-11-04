@@ -321,13 +321,13 @@ Resources:
 
 Outputs:
   ManagementSecurityGroupID:
-    Description: Security group ID for ADC ENIs
+    Description: Security group ID for management ADC ENIs
     Value: !GetAtt SecurityGroupStack.Outputs.ManagementSecurityGroupID
   ClientSecurityGroupID:
-    Description: Security group ID for ADC ENIs
+    Description: Security group ID for client ADC ENIs
     Value: !GetAtt SecurityGroupStack.Outputs.ClientSecurityGroupID
   ServerSecurityGroupID:
-    Description: Security group ID for ADC ENIs
+    Description: Security group ID for server ADC ENIs
     Value: !GetAtt SecurityGroupStack.Outputs.ServerSecurityGroupID
   InstanceProfileName:
     Description: Instance profile for ADCs
