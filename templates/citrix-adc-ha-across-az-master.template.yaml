@@ -345,7 +345,6 @@ Resources:
       Parameters:
         VPCID: !GetAtt VPCStack.Outputs.VPCID
         VPCTenancy: !Ref VPCTenancy
-        VPCCIDR: !Ref VPCCIDR
         RestrictedWebAppCIDR: !Ref RestrictedWebAppCIDR
         PrimaryManagementPrivateSubnetID: !GetAtt VPCStack.Outputs.PrivateSubnet1BID
         PrimaryClientPublicSubnetID: !GetAtt VPCStack.Outputs.PublicSubnet1ID
@@ -359,6 +358,7 @@ Resources:
         SecondaryManagementPrivateIP: !Ref SecondaryManagementPrivateIP
         SecondaryClientPrivateIP: !Ref SecondaryClientPrivateIP
         SecondaryServerPrivateIP: !Ref SecondaryServerPrivateIP
+        BastionSecurityGroupID: !GetAtt BastionStack.Outputs.BastionSecurityGroupID
         CitrixADCImageID: !Ref CitrixADCImageID
         KeyPairName: !Ref KeyPairName
         CitrixADCInstanceType: !Ref CitrixADCInstanceType
