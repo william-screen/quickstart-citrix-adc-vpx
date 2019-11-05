@@ -185,10 +185,9 @@ Parameters:
   BastionSecurityGroupID:
     Type: AWS::EC2::SecurityGroup::Id
     Description: >-
-      Bastion security group id.
-      This security group will be granted access to the security groups that will be
-      created for the Citrix ADC HA pair interfaces.
-      This will effectively allow the bastion hosts to open connections to all ADC interfaces ( management, client and server).
+      The security group ID that the bastion stack has created.
+      This will be used to allow access from the bastion hosts to the interfaces belonging to the security groups that will be created for the Citrix ADC HA pair.
+      Effectively the bastion hosts will be able to open connections to all ADC interfaces (management, client and server).
   QSS3BucketName:
     AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
     ConstraintDescription: >-
