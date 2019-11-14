@@ -40,14 +40,14 @@ Metadata:
           - NumBastionHosts
 
       - Label:
-          default: Citrix ADC configuration
+          default: Citrix ADC VPX configuration
         Parameters:
           - CitrixADCImageID
           - KeyPairName
           - CitrixADCInstanceType
 
       - Label:
-          default: AWS Quick Start Configuration
+          default: AWS Quick Start configuration
         Parameters:
           - QSS3BucketName
           - QSS3KeyPrefix
@@ -78,17 +78,17 @@ Metadata:
         default: Secondary Server private subnet CIDR
 
       PrimaryManagementPrivateIP:
-        default: Primary Management private IP
+        default: Primary Management private IP address
       PrimaryClientPrivateIP:
-        default: Primary Client private IP
+        default: Primary Client private IP address
       PrimaryServerPrivateIP:
-        default: Primary Server private IP
+        default: Primary Server private IP address
       SecondaryManagementPrivateIP:
-        default: Secondary Management private IP
+        default: Secondary Management private IP address
       SecondaryClientPrivateIP:
-        default: Secondary Client private IP
+        default: Secondary Client private IP address
       SecondaryServerPrivateIP:
-        default: Secondary Server private IP
+        default: Secondary Server private IP address
 
       NumBastionHosts:
         default: Number of bastion hosts
@@ -102,7 +102,7 @@ Metadata:
       KeyPairName:
         default: Key pair name
       CitrixADCInstanceType:
-        default: Citrix ADC instance type
+        default: Citrix ADC VPX instance type
 
       QSS3BucketName:
         default: Quick Start S3 bucket name
@@ -140,13 +140,13 @@ Parameters:
       - default
       - dedicated
   PrimaryAvailabilityZone:
-    Description: Availability Zone for Primary Citrix ADC deployment.
+    Description: Availability Zone for the primary Citrix ADC VPX node deployment.
     Type: AWS::EC2::AvailabilityZone::Name
   SecondaryAvailabilityZone:
-    Description: Availability Zone for Secondary Citrix ADC deployment.
+    Description: Availability Zone for the secondary Citrix ADC VPX node deployment.
     Type: AWS::EC2::AvailabilityZone::Name
   PrimaryManagementPrivateSubnetCIDR:
-    Description: CIDR block for primary management private subnet located in the primary Availability Zone.
+    Description: CIDR block for the primary Management private subnet located in the primary Availability Zone.
     Type: String
     Default: 10.0.1.0/24
     MinLength: 9
@@ -154,7 +154,7 @@ Parameters:
     AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
     ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x.
   PrimaryClientPublicSubnetCIDR:
-    Description: CIDR block for primary client public subnet located in the primary Availability Zone.
+    Description: CIDR block for the primary Client public subnet located in the primary Availability Zone.
     Type: String
     Default: 10.0.2.0/24
     MinLength: 9
@@ -162,7 +162,7 @@ Parameters:
     AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
     ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x.
   PrimaryServerPrivateSubnetCIDR:
-    Description: CIDR block for primary server private subnet located in the primary Availability Zone.
+    Description: CIDR block for the primary Server private subnet located in the primary Availability Zone.
     Type: String
     Default: 10.0.3.0/24
     MinLength: 9
@@ -170,7 +170,7 @@ Parameters:
     AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
     ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x.
   SecondaryManagementPrivateSubnetCIDR:
-    Description: CIDR block for secondary management private subnet located in the secondary Availability Zone.
+    Description: CIDR block for the secondary Management private subnet located in the secondary Availability Zone.
     Type: String
     Default: 10.0.4.0/24
     MinLength: 9
@@ -178,7 +178,7 @@ Parameters:
     AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
     ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x.
   SecondaryClientPublicSubnetCIDR:
-    Description: CIDR block for secondary client public subnet located in the secondary Availability Zone.
+    Description: CIDR block for the secondary Client public subnet located in the secondary Availability Zone.
     Type: String
     Default: 10.0.5.0/24
     MinLength: 9
@@ -186,7 +186,7 @@ Parameters:
     AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
     ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x.
   SecondaryServerPrivateSubnetCIDR:
-    Description: CIDR block for secondary server private subnet located in the secondary Availability Zone.
+    Description: CIDR block for the secondary Server private subnet located in the secondary Availability Zone.
     Type: String
     Default: 10.0.6.0/24
     MinLength: 9
@@ -197,32 +197,32 @@ Parameters:
     Default: ""
     Type: String
     Description: >-
-      [Optional] Leave empty for automatic assignment. Private IP assigned to the Primary Management ENI (last octet has to be between 5 and 254).
+      [Optional] Management private IP address of the secondary Citrix ADC instance (last octet must be between 5 and 254). It is automatically assigned from the primary Management subnet CIDR.
   PrimaryClientPrivateIP:
     Default: ""
     Type: String
     Description: >-
-      [Optional] Leave empty for automatic assignment. Private IP assigned to the Primary Client ENI (last octet has to be between 5 and 254).
+      [Optional] Client private IP address of the secondary Citrix ADC instance (last octet must be between 5 and 254). It is automatically assigned from primary Client IP address from the primary Client subnet CIDR.
   PrimaryServerPrivateIP:
     Default: ""
     Type: String
     Description: >-
-      [Optional] Leave empty for automatic assignment. Private IP assigned to the Primary Server ENI (last octet has to be between 5 and 254).
+      [Optional] Server private IP address of the secondary Citrix ADC instance (last octet must be between 5 and 254). It is automatically assigned from the primary Server subnet CIDR.
   SecondaryManagementPrivateIP:
     Default: ""
     Type: String
     Description: >-
-      [Optional] Leave empty for automatic assignment. Private IP assigned to the Secondary Management ENI (last octet has to be between 5 and 254).
+      [Optional] Management private IP address of the secondary Citrix ADC instance (last octet must be between 5 and 254). It is automatically assigned from the secondary Management subnet CIDR.
   SecondaryClientPrivateIP:
     Default: ""
     Type: String
     Description: >-
-      [Optional] Leave empty for automatic assignment. Private IP assigned to the Secondary Client ENI (last octet has to be between 5 and 254).
+      [Optional] Client private IP address of the secondary Citrix ADC instance (last octet must be between 5 and 254). It is automatically assigned from the secondary Client subnet CIDR.
   SecondaryServerPrivateIP:
     Default: ""
     Type: String
     Description: >-
-      [Optional] Leave empty for automatic assignment. Private IP assigned to the Secondary Server ENI (last octet has to be between 5 and 254).
+      [Optional] Server private IP address of the secondary Citrix ADC instance (last octet must be between 5 and 254). It is automatically assigned from the secondary Server subnet CIDR.
   QSS3BucketName:
     AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
     ConstraintDescription: >-
@@ -252,7 +252,7 @@ Parameters:
     MinLength: 9
     MaxLength: 18
     Description:
-      "A CIDR block that is allowed to access the ADC on tcp ports 80, 443.
+      "A CIDR block that is allowed to access the ADC VPX on TCP ports 80, 443.
       We recommend that you use a constrained CIDR range to
       reduce the potential of inbound attacks from unknown IP addresses."
     AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
@@ -269,7 +269,7 @@ Parameters:
     ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x.
   KeyPairName:
     ConstraintDescription: "Can contain only alphanumeric characters, spaces, dashes and underscores."
-    Description: EC2 key pair name to remotely access ADCs on port 22 (SSH).
+    Description: EC2 key pair name to remotely access ADC VPX instances on port 22 (SSH).
     MinLength: 1
     AllowedPattern: "[-_ a-zA-Z0-9]*"
     MaxLength: 64
@@ -278,7 +278,7 @@ Parameters:
     Default: m4.xlarge
     ConstraintDescription: Must be a valid EC2 instance type.
     Type: String
-    Description: Citrix ADC instance type.
+    Description: EC2 instance type to use for the ADC VPX instances.
     AllowedValues:
       - m4.xlarge
       - m4.2xlarge
