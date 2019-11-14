@@ -39,7 +39,7 @@ Metadata:
           - CitrixADCInstanceType
 
       - Label:
-          default: AWS Quick Start Configuration
+          default: AWS Quick Start configuration
         Parameters:
           - QSS3BucketName
           - QSS3KeyPrefix
@@ -68,26 +68,26 @@ Metadata:
         default: Secondary Server private subnet ID
 
       PrimaryManagementPrivateIP:
-        default: Primary Management private IP
+        default: Primary Management private IP address
       PrimaryClientPrivateIP:
-        default: Primary Client private IP
+        default: Primary Client private IP address
       PrimaryServerPrivateIP:
-        default: Primary Server private IP
+        default: Primary Server private IP address
       SecondaryManagementPrivateIP:
-        default: Secondary Management private IP
+        default: Secondary Management private IP address
       SecondaryClientPrivateIP:
-        default: Secondary Client private IP
+        default: Secondary Client private IP address
       SecondaryServerPrivateIP:
-        default: Secondary Server private IP
+        default: Secondary Server private IP address
       BastionSecurityGroupID:
-        default: Bastion security group ID
+        default: Bastion security group ID address
 
       VPCTenancy:
         default: VPC tenancy attribute
       KeyPairName:
         default: Key pair name
       CitrixADCInstanceType:
-        default: Citrix ADC instance type
+        default: Citrix ADC VPX instance type
 
       QSS3BucketName:
         default: Quick Start S3 bucket name
@@ -124,70 +124,64 @@ Parameters:
   PrimaryManagementPrivateSubnetID:
     Type: AWS::EC2::Subnet::Id
     Description: >-
-      Private subnet ID of an existing subnet dedicated for Primary Management ENI.
-      Note - The CIDR should be different from that of VPC.
-      (VPC Stack Private subnet 1B).
+      Private subnet ID of an existing subnet dedicated for the primary Management network interface.
+      Note - The CIDR should be different from that of VPC (VPC Stack Private subnet 1B).
   PrimaryClientPublicSubnetID:
     Type: AWS::EC2::Subnet::Id
     Description: >-
-      Public subnet ID of an existing subnet dedicated for Primary Client ENI.
-      (VPC Stack Public subnet 1).
+      Public subnet ID of an existing subnet dedicated for the primary Client network interface (VPC Stack Public subnet 1).
   PrimaryServerPrivateSubnetID:
     Type: AWS::EC2::Subnet::Id
     Description: >-
-      Private subnet ID of an existing subnet dedicated for Primary Server ENI.
-      (VPC Stack Private subnet 1A).
+      Private subnet ID of an existing subnet dedicated for the primary Server network interface (VPC Stack Private subnet 1A).
   SecondaryManagementPrivateSubnetID:
     Type: AWS::EC2::Subnet::Id
     Description: >-
-      Private subnet ID of an existing subnet dedicated for Secondary Management ENI.
-      (VPC Stack Private subnet 2B).
+      Private subnet ID of an existing subnet dedicated for the secondary Management network interface (VPC Stack Private subnet 2B).
   SecondaryClientPublicSubnetID:
     Type: AWS::EC2::Subnet::Id
     Description: >-
-      Public subnet ID of an existing subnet dedicated for Secondary Client ENI.
-      (VPC Stack Public subnet 2).
+      Public subnet ID of an existing subnet dedicated for the secondary Client network interface (VPC Stack Public subnet 2).
   SecondaryServerPrivateSubnetID:
     Type: AWS::EC2::Subnet::Id
     Description: >-
-      Private subnet ID of an existing subnet dedicated for Secondary Server ENI.
-      (VPC Stack Private subnet 2A).
+      Private subnet ID of an existing subnet dedicated for the secondary Server network interface (VPC Stack Private subnet 2A).
   PrimaryManagementPrivateIP:
     Default: ""
     Type: String
     Description: >-
-      [Optional] Leave empty for automatic assignment. Private IP assigned to the Primary Management ENI (last octet has to be between 5 and 254).
+      [Optional] Management private IP address of the primary Citrix ADC instance (last octet must be between 5 and 254). It is automatically assigned from the primary Management subnet CIDR.
   PrimaryClientPrivateIP:
     Default: ""
     Type: String
     Description: >-
-      [Optional] Leave empty for automatic assignment. Private IP assigned to the Primary Client ENI (last octet has to be between 5 and 254).
+      [Optional] Client private IP address of the primary Citrix ADC instance (last octet must be between 5 and 254). It is automatically assigned from the primary Client IP address from the primary Client subnet CIDR.
   PrimaryServerPrivateIP:
     Default: ""
     Type: String
     Description: >-
-      [Optional] Leave empty for automatic assignment. Private IP assigned to the Primary Server ENI (last octet has to be between 5 and 254).
+      [Optional] Server private IP address of the primary Citrix ADC instance (last octet must be between 5 and 254). It is automatically assigned from the primary Server subnet CIDR.
   SecondaryManagementPrivateIP:
     Default: ""
     Type: String
     Description: >-
-      [Optional] Leave empty for automatic assignment. Private IP assigned to the Secondary Management ENI (last octet has to be between 5 and 254).
+      [Optional] Management private IP address of the secondary Citrix ADC instance (last octet must be between 5 and 254). It is automatically assigned from the secondary Management subnet CIDR.
   SecondaryClientPrivateIP:
     Default: ""
     Type: String
     Description: >-
-      [Optional] Leave empty for automatic assignment. Private IP assigned to the Secondary Client ENI (last octet has to be between 5 and 254).
+      [Optional] Client private IP address of the secondary Citrix ADC instance (last octet must be between 5 and 254). It is automatically assigned from the secondary Client subnet CIDR.
   SecondaryServerPrivateIP:
     Default: ""
     Type: String
     Description: >-
-      [Optional] Leave empty for automatic assignment. Private IP assigned to the Secondary Server ENI (last octet has to be between 5 and 254).
+      [Optional] Server private IP address of the secondary Citrix ADC instance (last octet must be between 5 and 254). It is automatically assigned from the secondary Server subnet CIDR.
   BastionSecurityGroupID:
     Type: AWS::EC2::SecurityGroup::Id
     Description: >-
       The security group ID that the bastion stack has created.
-      This will be used to allow access from the bastion hosts to the interfaces belonging to the security groups that will be created for the Citrix ADC HA pair.
-      Effectively the bastion hosts will be able to open connections to all ADC interfaces (management, client and server).
+      This will be used to allow access from the bastion hosts to the interfaces belonging to the security groups that will be created for the Citrix ADC VPX pair.
+      Effectively the bastion hosts will be able to open connections to all ADC VPX interfaces (Management, Client, and Server).
   QSS3BucketName:
     AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
     ConstraintDescription: >-
@@ -214,7 +208,7 @@ Parameters:
     Type: String
   KeyPairName:
     ConstraintDescription: "Can contain only alphanumeric characters, spaces, dashes and underscores."
-    Description: EC2 key pair name to remotely access ADCs on port 22 (SSH).
+    Description: EC2 key pair name to remotely access ADC VPX instances on port 22 (SSH).
     MinLength: 1
     AllowedPattern: "[-_ a-zA-Z0-9]*"
     MaxLength: 64
@@ -223,7 +217,7 @@ Parameters:
     Default: m4.xlarge
     ConstraintDescription: Must be a valid EC2 instance type.
     Type: String
-    Description: Citrix ADC instance type
+    Description: EC2 instance type to use for the ADC VPX instances.
     AllowedValues:
       - m4.xlarge
       - m4.2xlarge
