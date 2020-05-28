@@ -42,6 +42,7 @@ Metadata:
           default: AWS Quick Start configuration
         Parameters:
           - QSS3BucketName
+          - QSS3BucketRegion
           - QSS3KeyPrefix
 
     ParameterLabels:
@@ -91,6 +92,8 @@ Metadata:
 
       QSS3BucketName:
         default: Quick Start S3 bucket name
+      QSS3BucketRegion:
+        default: Quick Start S3 bucket region
       QSS3KeyPrefix:
         default: Quick Start S3 key prefix
 
@@ -195,6 +198,10 @@ Parameters:
       copy all of the assets and submodules into it, if you want to override the
       Quick Start behavior for your specific implementation.
     Type: String
+  QSS3BucketRegion:
+    Default: 'us-east-1'
+    Description: 'The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.'
+    Type: String
   QSS3KeyPrefix:
     AllowedPattern: "^[0-9a-zA-Z-/]*$"
     ConstraintDescription: >-
@@ -232,13 +239,17 @@ Parameters:
       - c4.4xlarge
       - c4.8xlarge
 
+Conditions:
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
 
 Resources:
   SecurityGroupStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/security-group.template.yaml
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/security-group.template.yaml
+        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       Parameters:
         VPCID: !Ref VPCID
         RestrictedWebAppCIDR: !Ref RestrictedWebAppCIDR
@@ -247,14 +258,18 @@ Resources:
   IAMRoleStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/iam.template.yaml
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/iam.template.yaml
+        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
 
   PrimaryADCInstance:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/citrix-adc.template.yaml
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/citrix-adc.template.yaml
+        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       Parameters:
         CitrixADCImageID: !Ref CitrixADCImageID
         ManagementSecurityGroup: !GetAtt SecurityGroupStack.Outputs.ManagementSecurityGroupID
@@ -276,8 +291,10 @@ Resources:
   SecondaryADCInstance:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/citrix-adc.template.yaml
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/citrix-adc.template.yaml
+        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       Parameters:
         CitrixADCImageID: !Ref CitrixADCImageID
         ManagementSecurityGroup: !GetAtt SecurityGroupStack.Outputs.ManagementSecurityGroupID
@@ -299,8 +316,10 @@ Resources:
   LambdaHAAZStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/lambda-helper-ha-across-az.template.yaml
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/lambda-helper-ha-across-az.template.yaml
+        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       Parameters:
         PrimaryInstanceID: !GetAtt PrimaryADCInstance.Outputs.CitrixADCInstanceID
         PrimaryManagementPrivateIP: !GetAtt PrimaryADCInstance.Outputs.ManagementPrivateNSIP
@@ -309,7 +328,7 @@ Resources:
         SecondaryInstanceID: !GetAtt SecondaryADCInstance.Outputs.CitrixADCInstanceID
         SecondaryManagementPrivateIP: !GetAtt SecondaryADCInstance.Outputs.ManagementPrivateNSIP
         SecondaryClientPrivateIP: !GetAtt SecondaryADCInstance.Outputs.ClientPrivateVIP
-        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketName: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         ManagementSecurityGroupID: !GetAtt SecurityGroupStack.Outputs.ManagementSecurityGroupID
         PrimarySubnetID: !Ref PrimaryManagementPrivateSubnetID
