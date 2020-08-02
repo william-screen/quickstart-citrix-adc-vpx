@@ -339,7 +339,7 @@ Resources:
         - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
           S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       Parameters:
-        BastionAMIOS: Ubuntu-Server-16.04-LTS-HVM
+        BastionAMIOS: Ubuntu-Server-20.04-LTS-HVM
         KeyPairName: !Ref KeyPairName
         NumBastionHosts: !Ref NumBastionHosts
         PublicSubnet1ID: !GetAtt VPCStack.Outputs.PublicSubnet1ID
