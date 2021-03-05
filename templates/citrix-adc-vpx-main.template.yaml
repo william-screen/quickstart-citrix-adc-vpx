@@ -538,6 +538,20 @@ Resources:
         PrivateSubnet2ACIDR: !Ref SecondaryManagementPrivateSubnetCIDR
         VPCTenancy: !Ref VPCTenancy
 
+  PrimaryManagementSubnetRouteTabeleReassociation:
+    Condition: UseManagementEIP
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !GetAtt VPCStack.Outputs.PrivateSubnet1AID
+      RouteTableId: !GetAtt VPCStack.Outputs.PublicSubnetRouteTable
+
+  SecondaryManagementSubnetRouteTabeleReassociation:
+    Condition: UseManagementEIP
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !GetAtt VPCStack.Outputs.PrivateSubnet2AID
+      RouteTableId: !GetAtt VPCStack.Outputs.PublicSubnetRouteTable
+
   DeleteServersideNATGWSRoutetack:
     Type: AWS::CloudFormation::Stack
     Properties:
