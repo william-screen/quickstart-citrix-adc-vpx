@@ -691,11 +691,11 @@ Outputs:
     Value: !GetAtt WorkLoadStack.Outputs.PrimaryManagementPrivateNSIP
   PrimaryManagementPublicEIP:
     Condition: UseManagementEIP
-    Description: Primary client public EIP
+    Description: Primary management public EIP
     Value: !GetAtt WorkLoadStack.Outputs.PrimaryManagementPublicEIP
   SecondaryManagementPublicEIP:
     Condition: UseManagementEIP
-    Description: Secondary client public EIP
+    Description: Secondary management public EIP
     Value: !GetAtt WorkLoadStack.Outputs.SecondaryManagementPublicEIP
   PrimaryClientPublicEIP:
     Condition: UseClientEIP
