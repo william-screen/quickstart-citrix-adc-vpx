@@ -31,7 +31,7 @@ sync-bucket:
 	aws s3 sync . s3://${QSS3BucketName}/${QSS3KeyPrefix} --exclude Makefile --delete
 
 test-run:
-	taskcat -d test run # -r ap-south-1 --no-delete --keep-failed --output-directory ci
+	taskcat -d test run # -r ap-south-1 -t citrix-adc-master-ap-south-1 --no-delete --keep-failed --output-directory ci
 
 test-clean:
 	taskcat test clean ALL
