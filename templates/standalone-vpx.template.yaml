@@ -397,7 +397,7 @@ Resources:
         SubnetIds:
           - !Ref ManagementPrivateSubnetID
     Type: AWS::Lambda::Function
-  CustomResource:
+  BootstrapCustomResource:
     Properties:
       ServiceToken: !GetAtt BootstrapFunction.Arn
       NSIP: !GetAtt ManagementENI.PrimaryPrivateIpAddress
