@@ -552,7 +552,7 @@ Resources:
       SubnetId: !GetAtt VPCStack.Outputs.PrivateSubnet2AID
       RouteTableId: !GetAtt VPCStack.Outputs.PublicSubnetRouteTable
 
-  DeleteServersideNATGWSRoutetack:
+  DeleteServersideNATGWSRouteStack:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub
