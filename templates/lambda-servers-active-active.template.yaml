@@ -15,16 +15,8 @@ Parameters:
   PrimaryManagementPrivateIP:
     Description: Primary Management Private IP
     Type: String
-  ManagementSecurityGroupID:
+  LambdaSecurityGroupID:
     Type: String
-  PrimaryManagementPrivateSubnetID:
-    Type: AWS::EC2::Subnet::Id
-    Description: >-
-      Private Subnet ID of an existing subnet dedicated for Primary Management ENI.
-  SecondaryManagementPrivateSubnetID:
-    Type: AWS::EC2::Subnet::Id
-    Description: >-
-      Private Subnet ID of an existing subnet dedicated for Secondary Management ENI.
   PrimaryServerPrivateSubnetID:
     Type: AWS::EC2::Subnet::Id
     Description: >-
@@ -140,12 +132,13 @@ Resources:
       Role: !GetAtt ServersActiveRole.Arn
       VpcConfig:
         SubnetIds:
-          - !Ref PrimaryManagementPrivateSubnetID
-          - !Ref SecondaryManagementPrivateSubnetID
+          - !Ref PrimaryServerPrivateSubnetID
+          - !Ref SecondaryServerPrivateSubnetID
         SecurityGroupIds:
-          - !Ref ManagementSecurityGroupID
-  ConfigureLambda:
-    Type: Custom::ServersActiveActive
+          - !Ref LambdaSecurityGroupID
+
+  ConfigureServersActiveActiveCustomResource:
+    Type: AWS::CloudFormation::CustomResource
     Properties:
       ADCCustomPassword: !Ref ADCCustomPassword
       ServiceToken: !GetAtt ConfigureServersActiveActiveFunction.Arn

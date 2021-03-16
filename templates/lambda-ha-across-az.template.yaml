@@ -22,13 +22,13 @@ Parameters:
     Type: AWS::EC2::Subnet::Id
     Description: >-
       Public Subnet ID of an existing subnet dedicated for Primary Client ENI.
-  ManagementSecurityGroupID:
+  LambdaSecurityGroupID:
     Type: String
-  PrimaryManagementPrivateSubnetID:
+  PrimaryServerPrivateSubnetID:
     Type: AWS::EC2::Subnet::Id
     Description: >-
       Private Subnet ID of an existing subnet dedicated for Primary Management ENI.
-  SecondaryManagementPrivateSubnetID:
+  SecondaryServerPrivateSubnetID:
     Type: AWS::EC2::Subnet::Id
     Description: >-
       Private Subnet ID of an existing subnet dedicated for Secondary Management ENI.
@@ -145,12 +145,12 @@ Resources:
       Role: !GetAtt HAAZRole.Arn
       VpcConfig:
         SubnetIds:
-          - !Ref PrimaryManagementPrivateSubnetID
-          - !Ref SecondaryManagementPrivateSubnetID
+          - !Ref PrimaryServerPrivateSubnetID
+          - !Ref SecondaryServerPrivateSubnetID
         SecurityGroupIds:
-          - !Ref ManagementSecurityGroupID
-  ConfigureLambda:
-    Type: Custom::LambdaHAAZ
+          - !Ref LambdaSecurityGroupID
+  ConfigureHACustomResource:
+    Type: AWS::CloudFormation::CustomResource
     Properties:
       ServiceToken: !GetAtt ConfigureHAFunction.Arn
       ADCCustomPassword: !Ref ADCCustomPassword

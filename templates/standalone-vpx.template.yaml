@@ -26,6 +26,9 @@ Parameters:
   ServerSecurityGroup:
     Description: Security Group ID for Citrix ADC Server ENI
     Type: String
+  LambdaSecurityGroup:
+    Description: Security Group ID for Citrix ADC Lambda ENI
+    Type: String
   ManagementPrivateSubnetID:
     Type: AWS::EC2::Subnet::Id
     Description: >-
@@ -393,9 +396,9 @@ Resources:
       Timeout: 900
       VpcConfig:
         SecurityGroupIds:
-          - !Ref ManagementSecurityGroup
+          - !Ref LambdaSecurityGroup
         SubnetIds:
-          - !Ref ManagementPrivateSubnetID
+          - !Ref ServerPrivateSubnetID
     Type: AWS::Lambda::Function
   BootstrapCustomResource:
     Properties:

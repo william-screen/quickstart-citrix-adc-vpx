@@ -15,9 +15,9 @@ Parameters:
   ManagementPrivateIP:
     Description: Management Private IP
     Type: String
-  ManagementSecurityGroupID:
+  LambdaSecurityGroupID:
     Type: String
-  ManagementPrivateSubnetID:
+  ServerPrivateSubnetID:
     Type: AWS::EC2::Subnet::Id
     Description: >-
       Private Subnet ID of an existing subnet dedicated for Management ENI.
@@ -117,9 +117,9 @@ Resources:
       Timeout: 900
       VpcConfig:
         SecurityGroupIds:
-          - !Ref ManagementSecurityGroupID
+          - !Ref LambdaSecurityGroupID
         SubnetIds:
-          - !Ref ManagementPrivateSubnetID
+          - !Ref ServerPrivateSubnetID
   PooledLicenseRole:
     Properties:
       AssumeRolePolicyDocument:
