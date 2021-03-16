@@ -553,6 +553,7 @@ Resources:
       RouteTableId: !GetAtt VPCStack.Outputs.PublicSubnetRouteTable
 
   DeleteServersideNATGWSRouteStack:
+    DependsOn: WorkLoadStack
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub
