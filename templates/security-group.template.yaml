@@ -40,7 +40,7 @@ Resources:
     Properties:
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName} SecurityGroup
+          Value: !Sub ${AWS::StackName} ManagementSecurityGroup
       GroupDescription: "Allow everything from management security group and bastion security group"
       VpcId: !Ref VPCID
       SecurityGroupIngress:
@@ -81,7 +81,7 @@ Resources:
     Properties:
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName} SecurityGroup
+          Value: !Sub ${AWS::StackName} ClientSecurityGroup
       GroupDescription: "Enable HTTP and HTTPs from RestrictedWebAppCIDR and everything from bastion security group."
       VpcId: !Ref VPCID
       SecurityGroupIngress:
@@ -109,7 +109,7 @@ Resources:
     Properties:
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName} SecurityGroup
+          Value: !Sub ${AWS::StackName} ServerSecurityGroup
       GroupDescription: "Allow everything from within the server and bastion security group."
       VpcId: !Ref VPCID
 
