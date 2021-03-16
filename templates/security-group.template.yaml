@@ -47,6 +47,8 @@ Resources:
       GroupDescription: "Allow everything from management security group and bastion security group"
       VpcId: !Ref VPCID
       SecurityGroupIngress:
+        - IpProtocol: "-1"
+          CidrIp: !Ref VPCCIDR
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22

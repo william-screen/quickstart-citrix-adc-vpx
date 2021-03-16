@@ -569,6 +569,8 @@ Resources:
       Parameters:
         PrimaryPrivateServerSubnetRouteTableID: !GetAtt VPCStack.Outputs.PrivateSubnet1BRouteTable
         SecondaryPrivateServerSubnetRouteTableID: !GetAtt VPCStack.Outputs.PrivateSubnet2BRouteTable
+        PrimaryNATGWID: !GetAtt VPCStack.Outputs.NATGateway1ID
+        SecondaryNATGWID: !GetAtt VPCStack.Outputs.NATGateway2ID
 
   BastionStack:
     Condition: UseBastion
