@@ -448,8 +448,8 @@ Parameters:
       - VPX-5000
   BastionRequired:
     Type: String
-    Default: "No"
-    Description: For a sandbox deployment, choose Yes from the dropdown list. This deploys a Linux bastion host in the public subnet with an Elastic IP address that gives you access to the components in the private and public subnets.
+    Default: "Yes"
+    Description: Choose No if you do not want Bastion Host. This deploys a Linux bastion host in the public subnet with an Elastic IP address that gives you access to the components in the private and public subnets.
     AllowedValues:
       - "No"
       - "Yes"
