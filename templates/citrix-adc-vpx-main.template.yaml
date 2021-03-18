@@ -41,6 +41,7 @@ Metadata:
           - SecondaryManagementPrivateSubnetCIDR
           - SecondaryClientPublicSubnetCIDR
           - SecondaryServerPrivateSubnetCIDR
+          - NATGwOnServersubnetRequired
           - PrimaryManagementPrivateIP
           - PrimaryClientPrivateIP
           - PrimaryServerPrivateIP
@@ -145,6 +146,8 @@ Metadata:
         default: Assign Elastic IP address to Management NSIP
       LBVserverRequired:
         default: Do you want the QuickStart to configure a sample LB Vserver?
+      NATGwOnServersubnetRequired:
+        default: Do you want the QuickStart to associate a NAT-Gateway to Server subnets?
 
       ADCProductName:
         default: Citrix ADC Product Name
@@ -499,6 +502,13 @@ Parameters:
     AllowedValues:
       - "No"
       - "Yes"
+  NATGwOnServersubnetRequired:
+    Type: String
+    Default: "No"
+    Description: Select Yes to associate NAT-Gateway to server subnets
+    AllowedValues:
+      - "No"
+      - "Yes"
 
 Conditions:
   UsingDefaultBucket: !Equals [!Ref QSS3BucketName, "aws-quickstart"]
@@ -506,6 +516,7 @@ Conditions:
   UseClientEIP: !Equals [!Ref ClientEIPRequired, "Yes"]
   UseManagementEIP: !Equals [!Ref ManagementEIPRequired, "Yes"]
   UseBastion: !Equals [!Ref BastionRequired, "Yes"]
+  NATGwOnServerSubnetCondition: !Equals [!Ref NATGwOnServersubnetRequired, "No"]
 
 Resources:
   VPCStack:
@@ -554,6 +565,7 @@ Resources:
 
   DeleteServersideNATGWSRouteStack:
     DependsOn: WorkLoadStack
+    Condition: NATGwOnServerSubnetCondition
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub
