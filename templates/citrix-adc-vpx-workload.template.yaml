@@ -173,11 +173,10 @@ Parameters:
       (Optional) AMI ID of the Citrix ADC to be provisioned. If you are opting for a pooled license from ADM, enter the latest BYOL AMI ID. If opting for a PAYG subscription license, enter the AMI ID of the Citrix ADC to be provisioned. If you keep this box blank, the latest AMI associated to the above Citrix ADC Product Name and Version is provisioned by default.
   ADCCustomPassword:
     Type: String
-    AllowedPattern: '[.\S]{8,15}'
-    ConstraintDescription: Password length must be minimum 8 and maximum 15 characters.
+    AllowedPattern: '[.\S]{1,}'
+    ConstraintDescription: Password length must be minimum 1 character.
       Whitespace characters not allowed.
-    Description: Strong password recommended. Password length must be minimum 8 and
-      maximum 15 characters. Whitespace characters not allowed.
+    Description: Strong password recommended.
     NoEcho: true
   VPCID:
     Type: AWS::EC2::VPC::Id

@@ -6,11 +6,10 @@ Description: "This template creates lambda function required to configure 2 ADCs
 Parameters:
   ADCCustomPassword:
     Type: String
-    AllowedPattern: '[.\S]{8,15}'
-    ConstraintDescription: Password length must be minimum 8 and maximum 15 characters.
+    AllowedPattern: '[.\S]{1,}'
+    ConstraintDescription: Password length must be minimum 1 character.
       Whitespace characters not allowed.
-    Description: Strong password recommended. Password length must be minimum 8 and
-      maximum 15 characters. Whitespace characters not allowed.
+    Description: Strong password recommended.
     NoEcho: true
   ManagementPrivateIP:
     Description: Management Private IP
