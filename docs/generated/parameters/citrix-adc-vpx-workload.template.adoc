@@ -28,7 +28,7 @@
 (`ADCProductName`)|`Citrix ADC VPX - Customer Licensed`||Citrix ADC Product Version
 (`ADCProductVersion`)|`13.0`||Citrix ADC AMI ID
 (`CitrixADCImageID`)|`**__Blank string__**`|(Optional) AMI ID of the Citrix ADC to be provisioned. If you are opting for a pooled license from ADM, enter the latest BYOL AMI ID. If opting for a PAYG subscription license, enter the AMI ID of the Citrix ADC to be provisioned. If you keep this box blank, the latest AMI associated to the above Citrix ADC Product Name and Version is provisioned by default.|Citrix ADC login Password
-(`ADCCustomPassword`)|`**__Requires input__**`|Strong password recommended. Password length must be minimum 8 and maximum 15 characters. Whitespace characters not allowed.|Key pair name
+(`ADCCustomPassword`)|`**__Requires input__**`|Strong password recommended.|Key pair name
 (`KeyPairName`)|`**__Requires input__**`|Name of an existing public/private key pair. If you do not have one in this AWS Region, create it before continuing.|Citrix ADC instance type
 (`CitrixADCInstanceType`)|`m5.xlarge`|EC2 instance type to use for the ADC instances. Choose an instance type that’s available in the AWS Marketplace for the Region of deployment.|Citrix ADC IAM role
 (`CitrixADCIAMRole`)|`**__Blank string__**`|(Optional) If you want to use an existing role or create a new one, ensure that it has the required permissions, and then enter the name of the role. Otherwise, keep this box blank, and the deployment creates the required IAM role. See https://docs.citrix.com/en-us/citrix-adc/13/deploying-vpx/deploy-aws/prerequisites.html.|Assign Elastic IP addresses to both Primary and Secondary Management NSIPs

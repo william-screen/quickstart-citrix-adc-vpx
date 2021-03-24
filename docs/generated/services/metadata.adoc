@@ -7,6 +7,7 @@
 :template_aws_ec2_networkinterface:
 :template_aws_ec2_securitygroup:
 :template_aws_ec2_securitygroupingress:
+:template_aws_ec2_subnetroutetableassociation:
 :template_aws_iam_instanceprofile:
 :template_aws_iam_role:
 :template_aws_lambda_function:
@@ -16,12 +17,8 @@
 :template_copyzips:
 :template_custom_cidr2gatewayip:
 :template_custom_copyzips:
-:template_custom_lambdahaaz:
-:template_custom_serversactiveactive:
 :template_deterministic_ec2_instances:
 :template_ec2:
 :template_iam:
 :template_lambda:
-:template_lambdahaaz:
 :template_s3:
-:template_serversactiveactive:

@@ -1516,7 +1516,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 <td class="tableblock halign-left valign-top"><p class="tableblock">Citrix ADC login Password
 (<code>ADCCustomPassword</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Strong password recommended. Password length must be minimum 8 and maximum 15 characters. Whitespace characters not allowed.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Strong password recommended.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Key pair name
@@ -1737,6 +1737,12 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 <td class="tableblock halign-left valign-top"><p class="tableblock">CIDR block for the secondary server private subnet located in the secondary Availability Zone.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Do you want the QuickStart to associate a NAT-Gateway to Server subnets?
+(<code>NATGwOnServersubnetRequired</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>No</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Select Yes to associate NAT-Gateway to server subnets</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Primary management private IP (NSIP)
 (<code>PrimaryManagementPrivateIP</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Blank string</em></strong></code></p></td>
@@ -1798,8 +1804,8 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Create bastion host
 (<code>BastionRequired</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>No</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">For a sandbox deployment, choose Yes from the dropdown list. This deploys a Linux bastion host in the public subnet with an Elastic IP address that gives you access to the components in the private and public subnets.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Yes</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Choose No if you do not want Bastion Host. This deploys a Linux bastion host in the public subnet with an Elastic IP address that gives you access to the components in the private and public subnets.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1840,7 +1846,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 <td class="tableblock halign-left valign-top"><p class="tableblock">Citrix ADC login Password
 (<code>ADCCustomPassword</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Strong password recommended. Password length must be minimum 8 and maximum 15 characters. Whitespace characters not allowed.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Strong password recommended.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Key pair name
