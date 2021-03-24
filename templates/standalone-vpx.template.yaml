@@ -11,11 +11,10 @@ Parameters:
     Type: AWS::EC2::Image::Id
   ADCCustomPassword:
     Type: String
-    AllowedPattern: '[.\S]{8,15}'
-    ConstraintDescription: Password length must be minimum 8 and maximum 15 characters.
+    AllowedPattern: '[.\S]{1,}'
+    ConstraintDescription: Password length must be minimum 1 character.
       Whitespace characters not allowed.
-    Description: Strong password recommended. Password length must be minimum 8 and
-      maximum 15 characters. Whitespace characters not allowed.
+    Description: Strong password recommended.
     NoEcho: true
   ManagementSecurityGroup:
     Description: Security Group ID for Citrix ADC Management ENI
@@ -25,6 +24,9 @@ Parameters:
     Type: String
   ServerSecurityGroup:
     Description: Security Group ID for Citrix ADC Server ENI
+    Type: String
+  LambdaSecurityGroup:
+    Description: Security Group ID for Citrix ADC Lambda ENI
     Type: String
   ManagementPrivateSubnetID:
     Type: AWS::EC2::Subnet::Id
@@ -393,11 +395,11 @@ Resources:
       Timeout: 900
       VpcConfig:
         SecurityGroupIds:
-          - !Ref ManagementSecurityGroup
+          - !Ref LambdaSecurityGroup
         SubnetIds:
-          - !Ref ManagementPrivateSubnetID
+          - !Ref ServerPrivateSubnetID
     Type: AWS::Lambda::Function
-  CustomResource:
+  BootstrapCustomResource:
     Properties:
       ServiceToken: !GetAtt BootstrapFunction.Arn
       NSIP: !GetAtt ManagementENI.PrimaryPrivateIpAddress

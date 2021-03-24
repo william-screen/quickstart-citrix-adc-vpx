@@ -6,6 +6,10 @@ Parameters:
     Type: String
   SecondaryPrivateServerSubnetRouteTableID:
     Type: String
+  PrimaryNATGWID:
+    Type: String
+  SecondaryNATGWID:
+    Type: String
 
 Resources:
   LambdaDeleteRouteRole:
@@ -29,6 +33,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - ec2:DeleteRoute
+                  - ec2:CreateRoute
                 Resource:
                   - !Sub "arn:aws:ec2:*:*:route-table/${PrimaryPrivateServerSubnetRouteTableID}"
         - PolicyName: !Sub delete-route-secondary-${AWS::StackName}
@@ -38,6 +43,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - ec2:DeleteRoute
+                  - ec2:CreateRoute
                 Resource:
                   - !Sub "arn:aws:ec2:*:*:route-table/${SecondaryPrivateServerSubnetRouteTableID}"
         - PolicyName: lambdaupdate
@@ -62,27 +68,31 @@ Resources:
         ZipFile: |
           import json
           import cfnresponse
-          import logging
           import boto3
           def handler(event, context):
             response_data = {}
-            response_status = cfnresponse.FAILED
-            logging.info('Received event: {}'.format(json.dumps(event)))
-            if event['RequestType'] == 'Create':
-              try:
-                client = boto3.client('ec2')
-                response = client.delete_route(DestinationCidrBlock='0.0.0.0/0', RouteTableId=event['ResourceProperties']['PrimaryPrivateServerSubnetRouteTableID'])
-                logging.info("Delete Primary Server NATGW Response: {}".format(str(response)))
-                response = client.delete_route(DestinationCidrBlock='0.0.0.0/0', RouteTableId=event['ResourceProperties']['SecondaryPrivateServerSubnetRouteTableID'])
-                logging.info("Delete Secondary Server NATGW Response: {}".format(str(response)))
-                response_status = cfnresponse.SUCCESS
-              except Exception as e:
-                logging.error('failed to delete route: {}'.format(str(e)))
-                response_status = cfnresponse.FAILED
-              finally:
-                cfnresponse.send(event, context, response_status, response_data)
-            else:
-              response_status = cfnresponse.SUCCESS
+            response_status = cfnresponse.SUCCESS
+            print('Received event: {}'.format(json.dumps(event)))
+            try:
+              pri_server_subnet_rtb = event['ResourceProperties']['PrimaryPrivateServerSubnetRouteTableID']
+              sec_server_subnet_rtb = event['ResourceProperties']['SecondaryPrivateServerSubnetRouteTableID']
+              pri_natgw = event['ResourceProperties']['PrimaryNATGWID']
+              sec_natgw = event['ResourceProperties']['SecondaryNATGWID']
+              client = boto3.client('ec2')
+              if event['RequestType'] == 'Create':
+                response = client.delete_route(DestinationCidrBlock='0.0.0.0/0', RouteTableId=pri_server_subnet_rtb)
+                print("Delete Primary Server NATGW Response: {}".format(str(response)))
+                response = client.delete_route(DestinationCidrBlock='0.0.0.0/0', RouteTableId=sec_server_subnet_rtb)
+                print("Delete Secondary Server NATGW Response: {}".format(str(response)))
+              elif event['RequestType'] == 'Delete': # associate back the NATGW to the route table where PrivateServerSubnet is associated to
+                response = client.create_route(DestinationCidrBlock='0.0.0.0/0', NatGatewayId=pri_natgw, RouteTableId=pri_server_subnet_rtb)
+                print("Create Primary Server NATGW Response: {}".format(str(response)))
+                response = client.create_route(DestinationCidrBlock='0.0.0.0/0', NatGatewayId=sec_natgw, RouteTableId=sec_server_subnet_rtb)
+                print("Create Secondary Server NATGW Response: {}".format(str(response)))
+            except Exception as e:
+              print(f'failed to delete route: {str(e)}')
+              response_status = cfnresponse.FAILED
+            finally:
               cfnresponse.send(event, context, response_status, response_data)
 
   DeleteServerNATGWRoute:
@@ -91,3 +101,5 @@ Resources:
       ServiceToken: !GetAtt DeleteRouteFunction.Arn
       PrimaryPrivateServerSubnetRouteTableID: !Ref PrimaryPrivateServerSubnetRouteTableID
       SecondaryPrivateServerSubnetRouteTableID: !Ref SecondaryPrivateServerSubnetRouteTableID
+      PrimaryNATGWID: !Ref PrimaryNATGWID
+      SecondaryNATGWID: !Ref SecondaryNATGWID

@@ -41,6 +41,7 @@ Metadata:
           - SecondaryManagementPrivateSubnetCIDR
           - SecondaryClientPublicSubnetCIDR
           - SecondaryServerPrivateSubnetCIDR
+          - NATGwOnServersubnetRequired
           - PrimaryManagementPrivateIP
           - PrimaryClientPrivateIP
           - PrimaryServerPrivateIP
@@ -145,6 +146,8 @@ Metadata:
         default: Assign Elastic IP address to Management NSIP
       LBVserverRequired:
         default: Do you want the QuickStart to configure a sample LB Vserver?
+      NATGwOnServersubnetRequired:
+        default: Do you want the QuickStart to associate a NAT-Gateway to Server subnets?
 
       ADCProductName:
         default: Citrix ADC Product Name
@@ -186,11 +189,10 @@ Parameters:
       (Optional) AMI ID of the Citrix ADC to be provisioned. If you are opting for a pooled license from ADM, enter the latest BYOL AMI ID. If opting for a PAYG subscription license, enter the AMI ID of the Citrix ADC to be provisioned. If you keep this box blank, the latest AMI associated to the above Citrix ADC Product Name and Version is provisioned by default.
   ADCCustomPassword:
     Type: String
-    AllowedPattern: '[.\S]{8,15}'
-    ConstraintDescription: Password length must be minimum 8 and maximum 15 characters.
+    AllowedPattern: '[.\S]{1,}'
+    ConstraintDescription: Password length must be minimum 1 character.
       Whitespace characters not allowed.
-    Description: Strong password recommended. Password length must be minimum 8 and
-      maximum 15 characters. Whitespace characters not allowed.
+    Description: Strong password recommended.
     NoEcho: true
   VPCCIDR:
     Description: CIDR block for the VPC. Must be a valid IP CIDR range of the form x.x.x.x/x.
@@ -445,8 +447,8 @@ Parameters:
       - VPX-5000
   BastionRequired:
     Type: String
-    Default: "No"
-    Description: For a sandbox deployment, choose Yes from the dropdown list. This deploys a Linux bastion host in the public subnet with an Elastic IP address that gives you access to the components in the private and public subnets.
+    Default: "Yes"
+    Description: Choose No if you do not want Bastion Host. This deploys a Linux bastion host in the public subnet with an Elastic IP address that gives you access to the components in the private and public subnets.
     AllowedValues:
       - "No"
       - "Yes"
@@ -499,6 +501,13 @@ Parameters:
     AllowedValues:
       - "No"
       - "Yes"
+  NATGwOnServersubnetRequired:
+    Type: String
+    Default: "No"
+    Description: Select Yes to associate NAT-Gateway to server subnets
+    AllowedValues:
+      - "No"
+      - "Yes"
 
 Conditions:
   UsingDefaultBucket: !Equals [!Ref QSS3BucketName, "aws-quickstart"]
@@ -506,13 +515,14 @@ Conditions:
   UseClientEIP: !Equals [!Ref ClientEIPRequired, "Yes"]
   UseManagementEIP: !Equals [!Ref ManagementEIPRequired, "Yes"]
   UseBastion: !Equals [!Ref BastionRequired, "Yes"]
+  NATGwOnServerSubnetCondition: !Equals [!Ref NATGwOnServersubnetRequired, "No"]
 
 Resources:
   VPCStack:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub
-        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/quickstart-aws-vpc/templates/aws-vpc.template
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/quickstart-aws-vpc/templates/aws-vpc.template.yaml
         - S3Region:
             !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
           S3Bucket:
@@ -538,7 +548,23 @@ Resources:
         PrivateSubnet2ACIDR: !Ref SecondaryManagementPrivateSubnetCIDR
         VPCTenancy: !Ref VPCTenancy
 
-  DeleteServersideNATGWSRoutetack:
+  PrimaryManagementSubnetRouteTabeleReassociation:
+    Condition: UseManagementEIP
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !GetAtt VPCStack.Outputs.PrivateSubnet1AID
+      RouteTableId: !GetAtt VPCStack.Outputs.PublicSubnetRouteTable
+
+  SecondaryManagementSubnetRouteTabeleReassociation:
+    Condition: UseManagementEIP
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !GetAtt VPCStack.Outputs.PrivateSubnet2AID
+      RouteTableId: !GetAtt VPCStack.Outputs.PublicSubnetRouteTable
+
+  DeleteServersideNATGWSRouteStack:
+    DependsOn: WorkLoadStack
+    Condition: NATGwOnServerSubnetCondition
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub
@@ -554,6 +580,8 @@ Resources:
       Parameters:
         PrimaryPrivateServerSubnetRouteTableID: !GetAtt VPCStack.Outputs.PrivateSubnet1BRouteTable
         SecondaryPrivateServerSubnetRouteTableID: !GetAtt VPCStack.Outputs.PrivateSubnet2BRouteTable
+        PrimaryNATGWID: !GetAtt VPCStack.Outputs.NATGateway1ID
+        SecondaryNATGWID: !GetAtt VPCStack.Outputs.NATGateway2ID
 
   BastionStack:
     Condition: UseBastion
@@ -691,11 +719,11 @@ Outputs:
     Value: !GetAtt WorkLoadStack.Outputs.PrimaryManagementPrivateNSIP
   PrimaryManagementPublicEIP:
     Condition: UseManagementEIP
-    Description: Primary client public EIP
+    Description: Primary management public EIP
     Value: !GetAtt WorkLoadStack.Outputs.PrimaryManagementPublicEIP
   SecondaryManagementPublicEIP:
     Condition: UseManagementEIP
-    Description: Secondary client public EIP
+    Description: Secondary management public EIP
     Value: !GetAtt WorkLoadStack.Outputs.SecondaryManagementPublicEIP
   PrimaryClientPublicEIP:
     Condition: UseClientEIP

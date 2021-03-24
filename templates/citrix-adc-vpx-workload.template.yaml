@@ -173,11 +173,10 @@ Parameters:
       (Optional) AMI ID of the Citrix ADC to be provisioned. If you are opting for a pooled license from ADM, enter the latest BYOL AMI ID. If opting for a PAYG subscription license, enter the AMI ID of the Citrix ADC to be provisioned. If you keep this box blank, the latest AMI associated to the above Citrix ADC Product Name and Version is provisioned by default.
   ADCCustomPassword:
     Type: String
-    AllowedPattern: '[.\S]{8,15}'
-    ConstraintDescription: Password length must be minimum 8 and maximum 15 characters.
+    AllowedPattern: '[.\S]{1,}'
+    ConstraintDescription: Password length must be minimum 1 character.
       Whitespace characters not allowed.
-    Description: Strong password recommended. Password length must be minimum 8 and
-      maximum 15 characters. Whitespace characters not allowed.
+    Description: Strong password recommended.
     NoEcho: true
   VPCID:
     Type: AWS::EC2::VPC::Id
@@ -477,6 +476,22 @@ Conditions:
   UseLatestAMI: !Equals [!Ref 'CitrixADCImageID', ""]
 
 Resources:
+  FindVPCCIDRStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/lambda-find-vpc-cidr.template.yaml
+        - S3Region:
+            !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
+          S3Bucket:
+            !If [
+              UsingDefaultBucket,
+              !Sub "${QSS3BucketName}-${AWS::Region}",
+              !Ref QSS3BucketName,
+            ]
+      Parameters:
+        VPCID: !Ref VPCID
+
   SecurityGroupStack:
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -492,6 +507,7 @@ Resources:
             ]
       Parameters:
         VPCID: !Ref VPCID
+        VPCCIDR: !GetAtt FindVPCCIDRStack.Outputs.VPCCIDR
         RestrictedWebAppCIDR: !Ref RestrictedWebAppCIDR
         RestrictedSSHCIDR: !Ref RestrictedSSHCIDR
         BastionSecurityGroupID: !Ref BastionSecurityGroupID
@@ -553,6 +569,7 @@ Resources:
         ManagementSecurityGroup: !GetAtt SecurityGroupStack.Outputs.ManagementSecurityGroupID
         ClientSecurityGroup: !GetAtt SecurityGroupStack.Outputs.ClientSecurityGroupID
         ServerSecurityGroup: !GetAtt SecurityGroupStack.Outputs.ServerSecurityGroupID
+        LambdaSecurityGroup: !GetAtt SecurityGroupStack.Outputs.LambdaSecurityGroupID
         ManagementPrivateSubnetID: !Ref PrimaryManagementPrivateSubnetID
         ClientPublicSubnetID: !Ref PrimaryClientPublicSubnetID
         ServerPrivateSubnetID: !Ref PrimaryServerPrivateSubnetID
@@ -592,6 +609,7 @@ Resources:
         ManagementSecurityGroup: !GetAtt SecurityGroupStack.Outputs.ManagementSecurityGroupID
         ClientSecurityGroup: !GetAtt SecurityGroupStack.Outputs.ClientSecurityGroupID
         ServerSecurityGroup: !GetAtt SecurityGroupStack.Outputs.ServerSecurityGroupID
+        LambdaSecurityGroup: !GetAtt SecurityGroupStack.Outputs.LambdaSecurityGroupID
         ManagementPrivateSubnetID: !Ref SecondaryManagementPrivateSubnetID
         ClientPublicSubnetID: !Ref SecondaryClientPublicSubnetID
         ServerPrivateSubnetID: !Ref SecondaryServerPrivateSubnetID
@@ -651,8 +669,8 @@ Resources:
         Bandwidth: !Ref Bandwidth
         LicensingMode: !Ref LicensingMode
         ManagementPrivateIP: !GetAtt PrimaryADCInstance.Outputs.ManagementPrivateNSIP
-        ManagementPrivateSubnetID: !Ref PrimaryManagementPrivateSubnetID
-        ManagementSecurityGroupID: !GetAtt SecurityGroupStack.Outputs.ManagementSecurityGroupID
+        ServerPrivateSubnetID: !Ref PrimaryServerPrivateSubnetID
+        LambdaSecurityGroupID: !GetAtt SecurityGroupStack.Outputs.LambdaSecurityGroupID
         Platform: !Ref Platform
         PooledEdition: !Ref PooledEdition
         QSS3BucketName: !GetAtt LambdaCopierStack.Outputs.LambdaZipsBucket
@@ -679,8 +697,8 @@ Resources:
         Bandwidth: !Ref Bandwidth
         LicensingMode: !Ref LicensingMode
         ManagementPrivateIP: !GetAtt SecondaryADCInstance.Outputs.ManagementPrivateNSIP
-        ManagementPrivateSubnetID: !Ref SecondaryManagementPrivateSubnetID
-        ManagementSecurityGroupID: !GetAtt SecurityGroupStack.Outputs.ManagementSecurityGroupID
+        ServerPrivateSubnetID: !Ref SecondaryServerPrivateSubnetID
+        LambdaSecurityGroupID: !GetAtt SecurityGroupStack.Outputs.LambdaSecurityGroupID
         Platform: !Ref Platform
         PooledEdition: !Ref PooledEdition
         QSS3BucketName: !GetAtt LambdaCopierStack.Outputs.LambdaZipsBucket
@@ -713,9 +731,9 @@ Resources:
         PrimaryClientPublicSubnetID: !Ref PrimaryClientPublicSubnetID
         SecondaryManagementPrivateIP: !GetAtt SecondaryADCInstance.Outputs.ManagementPrivateNSIP
         SecondaryClientPrivateIP: !GetAtt SecondaryADCInstance.Outputs.ClientPrivateVIP
-        ManagementSecurityGroupID: !GetAtt SecurityGroupStack.Outputs.ManagementSecurityGroupID
-        PrimaryManagementPrivateSubnetID: !Ref PrimaryManagementPrivateSubnetID
-        SecondaryManagementPrivateSubnetID: !Ref SecondaryManagementPrivateSubnetID
+        LambdaSecurityGroupID: !GetAtt SecurityGroupStack.Outputs.LambdaSecurityGroupID
+        PrimaryServerPrivateSubnetID: !Ref PrimaryServerPrivateSubnetID
+        SecondaryServerPrivateSubnetID: !Ref SecondaryServerPrivateSubnetID
         LBVserverRequired: !Ref LBVserverRequired
         QSS3BucketName: !GetAtt LambdaCopierStack.Outputs.LambdaZipsBucket
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
@@ -725,7 +743,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub
-        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/lambda-servers-active-active.template.yaml
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/lambda-all-servers-reachable.template.yaml
         - S3Region:
             !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
           S3Bucket:
@@ -740,9 +758,7 @@ Resources:
         SecondaryManagementPrivateIP: !GetAtt SecondaryADCInstance.Outputs.ManagementPrivateNSIP
         QSS3BucketName: !GetAtt LambdaCopierStack.Outputs.LambdaZipsBucket
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        ManagementSecurityGroupID: !GetAtt SecurityGroupStack.Outputs.ManagementSecurityGroupID
-        PrimaryManagementPrivateSubnetID: !Ref PrimaryManagementPrivateSubnetID
-        SecondaryManagementPrivateSubnetID: !Ref SecondaryManagementPrivateSubnetID
+        LambdaSecurityGroupID: !GetAtt SecurityGroupStack.Outputs.LambdaSecurityGroupID
         PrimaryServerPrivateSubnetID: !Ref PrimaryServerPrivateSubnetID
         SecondaryServerPrivateSubnetID: !Ref SecondaryServerPrivateSubnetID
 
